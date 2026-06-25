@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uttara Praveen — The Eras Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600&family=Outfit:wght@300;400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* connective gold thread */
+    --gold: #D4A857;
+    --gold-soft: #E8C988;
+    --ink: #1E2233;
+
+    /* intro era */
+    --intro-bg: #FBF6F0;
+    --intro-lavender: #9C8AA5;
+    --intro-blush: #F2C9D1;
+    --intro-text: #1E2233;
+
+    /* sad poet era */
+    --sad-bg: #1B1E2C;
+    --sad-bg2: #232739;
+    --sad-silver: #C9CDD9;
+    --sad-parchment: #EDE6DA;
+    --sad-text: #E7E5EE;
+
+    /* happy girlie era */
+    --happy-bg: #FFF6EC;
+    --happy-coral: #FF6F61;
+    --happy-yellow: #FDE49C;
+    --happy-sky: #A9D8E6;
+    --happy-text: #2A2230;
+
+    --serif: "Playfair Display", Georgia, serif;
+    --sans: "Outfit", system-ui, sans-serif;
+    --hand: "Caveat", cursive;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: var(--sans);
+    background: var(--intro-bg);
+    color: var(--intro-text);
+    overflow-x: hidden;
+  }
+  ::selection{ background: var(--gold-soft); color: var(--ink); }
+
+  a{color:inherit; text-decoration:none;}
+  img{display:block; max-width:100%;}
+
+  /* ---------- reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- focus ---------- */
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ================= NOW PLAYING BAR ================= */
+  #now-playing{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 22px;
+    background: rgba(27,30,44,0.92);
+    color: #EFEAF2;
+    backdrop-filter: blur(6px);
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    transition: background 0.6s ease;
+  }
+  #now-playing .vinyl{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, var(--gold) 0%, var(--gold) 8%, #111 9%, #111 60%, var(--gold) 61%, var(--gold) 100%);
+    animation: spin 3.2s linear infinite;
+    flex-shrink:0;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  #now-playing .label{
+    text-transform: uppercase;
+    opacity: 0.65;
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+  #now-playing .track-name{
+    font-weight: 600;
+    font-size: 13px;
+  }
+  #now-playing .bars{
+    display:flex; gap:3px; align-items:flex-end; height:14px; margin-left:auto;
+  }
+  #now-playing .bars span{
+    width:3px; background: var(--gold);
+    animation: bounce 0.9s ease-in-out infinite;
+    border-radius:2px;
+  }
+  #now-playing .bars span:nth-child(1){ animation-delay: 0s; height: 40%;}
+  #now-playing .bars span:nth-child(2){ animation-delay: 0.2s; height: 90%;}
+  #now-playing .bars span:nth-child(3){ animation-delay: 0.4s; height: 60%;}
+  #now-playing .bars span:nth-child(4){ animation-delay: 0.1s; height: 100%;}
+  @keyframes bounce{
+    0%,100%{ transform: scaleY(0.4); }
+    50%{ transform: scaleY(1); }
+  }
+
+  /* progress thread */
+  #thread-track{
+    position: fixed; top: 38px; left:0; right:0; height: 3px;
+    background: rgba(255,255,255,0.08);
+    z-index: 998;
+  }
+  #thread-fill{
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+    transition: width 0.1s linear;
+  }
+
+  /* ================= GENERIC SECTION SHELL ================= */
+  section{
+    position: relative;
+    padding: 140px 8vw 120px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .track-meta{
+    display:flex;
+    align-items:baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+    font-family: var(--sans);
+  }
+  .track-num{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    opacity: 0.55;
+    letter-spacing: 0.05em;
+  }
+  .track-dur{
+    font-size: 12px;
+    opacity: 0.45;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .eyebrow-line{
+    flex:1;
+    height:1px;
+    background: currentColor;
+    opacity: 0.15;
+  }
+
+  h2.section-title{
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .section-title em{
+    font-style: italic;
+    color: var(--gold);
+  }
+  .deck{
+    font-family: var(--hand);
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+    margin-top: 10px;
+    opacity: 0.8;
+  }
+
+  .reveal{
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(.2,.8,.2,1), transform 0.8s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.in{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1{ transition-delay: 0.08s; }
+  .reveal-delay-2{ transition-delay: 0.16s; }
+  .reveal-delay-3{ transition-delay: 0.24s; }
+  .reveal-delay-4{ transition-delay: 0.32s; }
+
+  /* ============== HERO ============== */
+  #hero{
+    background:
+      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(242,201,209,0.55), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 20%, rgba(156,138,165,0.35), transparent 60%),
+      var(--intro-bg);
+    color: var(--intro-text);
+    padding-top: 160px;
+    align-items: flex-start;
+    overflow:hidden;
+  }
+  .hero-eyebrow{
+    font-family: var(--hand);
+    font-size: 1.4rem;
+    color: var(--intro-lavender);
+    margin-bottom: 6px;
+  }
+  .hero-title{
+    font-family: var(--serif);
+    font-weight: 800;
+    font-size: clamp(3.2rem, 9vw, 7.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .hero-title .line2{
+    display:block;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--intro-lavender);
+    font-size: 0.6em;
+    margin-top: 6px;
+  }
+  .hero-sub{
+    margin-top: 28px;
+    max-width: 46ch;
+    font-size: 1.15rem;
+    line-height: 1.65;
+    opacity: 0.85;
+  }
+  .hero-sub .accent{
+    font-family: var(--hand);
+    font-size: 1.3em;
+    color: var(--happy-coral);
+  }
+  .hero-cta-row{
+    margin-top: 44px;
+    display:flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn-solid{
+    background: var(--ink);
+    color: var(--intro-bg);
+  }
+  .btn:hover{
+    transform: translateY(-3px) rotate(-1deg);
+    box-shadow: 0 10px 24px -8px rgba(30,34,51,0.35);
+  }
+  .btn-solid:hover{ background: var(--happy-coral); border-color: var(--happy-coral); color: white; }
+  .btn-ghost:hover{ background: var(--ink); color: var(--intro-bg); }
+
+  /* friendship bracelet scatter */
+  .bracelets{
+    position:absolute; inset:0; pointer-events:none;
+  }
+  .bead-string{
+    position:absolute;
+    font-family: var(--sans);
+    font-weight:700;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--ink);
+    background: var(--happy-yellow);
+    box-shadow: 0 6px 14px -6px rgba(0,0,0,0.25);
+    animation: float-bead 7s ease-in-out infinite;
+    transform: rotate(var(--rot,0deg));
+  }
+  @keyframes float-bead{
+    0%,100%{ transform: translateY(0) rotate(var(--rot,0deg)); }
+    50%{ transform: translateY(-16px) rotate(var(--rot,0deg)); }
+  }
+
+  .scroll-cue{
+    position:absolute;
+    bottom: 40px; left: 8vw;
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--hand);
+    font-size: 1.1rem;
+    color: var(--intro-lavender);
+  }
+  .scroll-cue .arrow{
+    width: 22px; height: 22px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    animation: nudge 1.6s ease-in-out infinite;
+  }
+  @keyframes nudge{
+    0%,100%{ transform: rotate(45deg) translate(0,0); }
+    50%{ transform: rotate(45deg) translate(6px,6px); }
+  }
+
+  /* ============== SAD POET SECTIONS (about / skills) ============== */
+  .era-sad{
+    background: linear-gradient(180deg, var(--sad-bg), var(--sad-bg2));
+    color: var(--sad-text);
+  }
+  .era-sad .section-title em{ color: var(--sad-parchment); }
+  .era-sad .track-num, .era-sad .track-dur{ opacity:0.5; }
+
+  .about-grid{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 64px;
+    align-items: start;
+    margin-top: 40px;
+  }
+  .poem-block{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    line-height: 1.75;
+    color: var(--sad-parchment);
+    border-left: 2px solid var(--gold);
+    padding-left: 28px;
+  }
+  .poem-block .stanza{ margin-bottom: 22px; opacity: 0; transform: translateX(-10px); transition: opacity .9s ease, transform .9s ease; }
+  .poem-block .stanza.in{ opacity:1; transform:translateX(0); }
+
+  .about-card{
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 32px;
+    backdrop-filter: blur(4px);
+  }
+  .about-card p{
+    font-size: 1.02rem;
+    line-height: 1.75;
+    opacity: 0.85;
+    margin-bottom: 16px;
+  }
+  .liner-notes{
+    margin-top: 22px;
+    font-family: var(--hand);
+    font-size: 1.2rem;
+    color: var(--gold-soft);
+  }
+
+  /* skills as "instruments / credits" */
+  .credits-wrap{ margin-top: 30px; }
+  .credit-group{ margin-bottom: 36px; }
+  .credit-group-title{
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .credit-group-title::after{
+    content:""; flex:1; height:1px; background: currentColor; opacity:0.25;
+  }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--sad-text);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .chip:hover{
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  /* ============== HAPPY GIRLIE SECTIONS (projects) ============== */
+  .era-happy{
+    background:
+      radial-gradient(ellipse 50% 40% at 85% 10%, rgba(169,216,230,0.5), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 5% 90%, rgba(253,228,156,0.55), transparent 60%),
+      var(--happy-bg);
+    color: var(--happy-text);
+  }
+  .era-happy .section-title em{ color: var(--happy-coral); }
+
+  .project-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-top: 44px;
+  }
+  .project-card{
+    background: white;
+    border-radius: 22px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 18px 40px -20px rgba(40,20,20,0.18);
+    transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
+    overflow:hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .project-card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height: 6px;
+    background: linear-gradient(90deg, var(--happy-coral), var(--happy-yellow), var(--happy-sky));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+  }
+  .project-card:hover{
+    transform: translateY(-8px) rotate(-0.4deg);
+    box-shadow: 0 26px 50px -18px rgba(40,20,20,0.28);
+  }
+  .project-card:hover::before{ transform: scaleX(1); }
+  .project-tag{
+    font-family: var(--hand);
+    font-size: 1.05rem;
+    color: var(--happy-coral);
+    margin-bottom: 8px;
+    display:inline-block;
+  }
+  .project-card h3{
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .project-card p{
+    font-size: 0.97rem;
+    line-height: 1.6;
+    opacity: 0.78;
+  }
+  .project-stack{
+    margin-top: 18px;
+    display:flex; flex-wrap:wrap; gap:8px;
+  }
+  .stack-pill{
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: var(--happy-text);
+    color: var(--happy-bg);
+    opacity: 0.85;
+  }
+
+  /* ============== LEADERSHIP / ACHIEVEMENTS — split duality section ============== */
+  #duality{
+    padding: 0;
+    min-height: auto;
+  }
+  .duality-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+  }
+  .duality-side{
+    padding: 140px 5vw 100px;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+  }
+  .duality-side.side-light{
+    background: var(--happy-bg);
+    color: var(--happy-text);
+  }
+  .duality-side.side-dark{
+    background: var(--sad-bg);
+    color: var(--sad-text);
+  }
+  .duality-side h3{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.9rem;
+    margin-bottom: 28px;
+  }
+  .duality-side.side-light h3{ color: var(--happy-coral); }
+  .duality-side.side-dark h3{ color: var(--gold-soft); }
+
+  .achv-list{ list-style:none; display:flex; flex-direction:column; gap:16px; }
+  .achv-list li{
+    font-size: 0.98rem;
+    line-height: 1.5;
+    padding-left: 22px;
+    position:relative;
+    opacity: 0.88;
+  }
+  .achv-list li::before{
+    content:"✦";
+    position:absolute; left:0; top:1px;
+    font-size: 0.85em;
+  }
+  .side-light .achv-list li::before{ color: var(--happy-coral); }
+  .side-dark .achv-list li::before{ color: var(--gold); }
+
+  .seam{
+    position:absolute; top:0; bottom:0; left:50%;
+    width:1px;
+    background: linear-gradient(180deg, transparent, var(--gold), transparent);
+    z-index: 2;
+  }
+
+  /* ============== CERTIFICATIONS — vinyl sleeve strip ============== */
+  #certs{
+    background: var(--intro-bg);
+    color: var(--intro-text);
+    min-height: auto;
+    padding: 120px 8vw;
+  }
+  .cert-row{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .cert-sleeve{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+    background: white;
+    border-radius: 16px;
+    padding: 22px 26px;
+    border: 1px solid rgba(30,34,51,0.08);
+    box-shadow: 0 14px 30px -18px rgba(30,34,51,0.15);
+  }
+  .mini-vinyl{
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink:0;
+    background: radial-gradient(circle at center, var(--gold) 0%, var(--gold) 14%, var(--ink) 15%, var(--ink) 65%, var(--gold) 66%, var(--gold) 100%);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+  }
+  .cert-sleeve h4{
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+  .cert-sleeve span{
+    font-size: 0.82rem;
+    opacity: 0.6;
+  }
+
+  /* ============== CONTACT / OUTRO ============== */
+  #outro{
+    background: linear-gradient(180deg, var(--sad-bg2), var(--ink) 70%, #14101c);
+    color: var(--sad-text);
+    align-items: center;
+    text-align:center;
+    overflow:hidden;
+  }
+  #outro .section-title{
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+  }
+  .outro-line{
+    font-family: var(--hand);
+    font-size: 1.5rem;
+    color: var(--gold-soft);
+    margin-top: 18px;
+  }
+  .contact-row{
+    margin-top: 50px;
+    display:flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content:center;
+  }
+  .contact-pill{
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    display:flex; align-items:center; gap:10px;
+  }
+  .contact-pill:hover{
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+  }
+  .contact-pill svg{ width:16px; height:16px; }
+
+  footer{
+    text-align:center;
+    padding: 30px;
+    font-size: 0.78rem;
+    opacity: 0.4;
+    background: #14101c;
+    color: var(--sad-text);
+    font-family: var(--sans);
+  }
+
+  /* sparkle field for outro */
+  .sparkle-field{ position:absolute; inset:0; pointer-events:none; }
+  .sparkle{
+    position:absolute;
+    color: var(--gold-soft);
+    font-size: 1rem;
+    opacity: 0;
+    animation: twinkle 3.5s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0; transform: scale(0.6); }
+    50%{ opacity:0.8; transform: scale(1.1); }
+  }
+
+  /* ============== RESPONSIVE ============== */
+  @media (max-width: 880px){
+    section{ padding: 110px 6vw 80px; }
+    .about-grid{ grid-template-columns: 1fr; gap: 40px; }
+    .project-grid{ grid-template-columns: 1fr; }
+    .duality-wrap{ grid-template-columns: 1fr; }
+    .seam{ display:none; }
+    .cert-row{ grid-template-columns: 1fr; }
+    #now-playing{ font-size: 11px; padding: 9px 16px; gap:10px;}
+    #now-playing .label{ display:none; }
+    .bracelets{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="now-playing">
+  <div class="vinyl"></div>
+  <span class="label">Now playing</span>
+  <span class="track-name" id="np-track">01 · Intro (Taylor's Version)</span>
+  <div class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+</div>
+<div id="thread-track"><div id="thread-fill"></div></div>
+
+<!-- ================= HERO ================= -->
+<section id="hero" data-track="01 · Intro (Taylor's Version)" data-mood="intro">
+  <div class="bracelets" aria-hidden="true">
+    <span class="bead-string" style="top:18%; left:74%; --rot:-6deg; animation-delay:0s;">DEV</span>
+    <span class="bead-string" style="top:38%; left:86%; --rot:4deg; animation-delay:1.2s;">POET</span>
+    <span class="bead-string" style="top:62%; left:78%; --rot:-3deg; animation-delay:2.1s;">CHAOS GOOD</span>
+    <span class="bead-string" style="top:80%; left:90%; --rot:6deg; animation-delay:0.6s;">22</span>
+  </div>
+
+  <p class="hero-eyebrow">welcome to the era of —</p>
+  <h1 class="hero-title">Uttara Praveen<span class="line2">developer, debater, debutante of disaster</span></h1>
+  <p class="hero-sub">B.Tech IT student who codes full-stack apps by day and writes the kind of poetry she'll never post by night. <span class="accent">it's giving main character energy with a sad-girl autumn playlist.</span></p>
+  <div class="hero-cta-row">
+    <a href="#projects" class="btn btn-solid">see the discography ↓</a>
+    <a href="#outro" class="btn btn-ghost">get in touch</a>
+  </div>
+
+  <div class="scroll-cue"><span class="arrow"></span> scroll for the plot twist</div>
+</section>
+
+<!-- ================= ABOUT (sad poet era) ================= -->
+<section id="about" class="era-sad" data-track="02 · The Origin Story" data-mood="sad">
+  <div class="track-meta">
+    <span class="track-num">Track 02</span>
+    <span class="eyebrow-line"></span>
+    <span class="track-dur">est. 2026</span>
+  </div>
+  <h2 class="section-title reveal">about <em>her</em></h2>
+  <p class="deck reveal reveal-delay-1">(the lore, condensed)</p>
+
+  <div class="about-grid">
+    <div class="poem-block">
+      <p class="stanza">she grew up between<br>a keyboard and a notebook —<br>one for syntax, one for feelings,<br>both equally unedited.</p>
+      <p class="stanza">somewhere along the way<br>"debug it" and "write about it"<br>became the same sentence,<br>the same 2am, the same girl.</p>
+      <p class="stanza">this is the part where<br>the resume turns into a person.</p>
+    </div>
+
+    <div class="about-card">
+      <p>I'm an Information Technology undergraduate at LBS Institute of Technology for Women, graduating in 2026 with an 82.1% CGPA — the kind of stat I'd put in a highlight reel if this were that kind of website. (It is. We're doing it.)</p>
+      <p>I build full-stack web apps, dabble in ML when the data behaves, and have somehow ended up leading a club, organizing events, and giving panel-discussion energy while still being the person who cries at sad piano covers. Both things are true. Neither is a phase.</p>
+      <p>I'm into clean code, messier feelings, and the specific joy of shipping something that actually works.</p>
+      <p class="liner-notes">"she's a 10 but she debugs her own Firebase rules" — me, about me</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SKILLS (sad poet era, continued) ================= -->
+<section id="skills" class="era-sad" data-track="03 · Track List of Talents" data-mood="sad">
+  <div class="track-meta">
+    <span class="track-num">Track 03</span>
+    <span class="eyebrow-line"></span>
+    <span class="track-dur">the skillset</span>
+  </div>
+  <h2 class="section-title reveal">what i bring <em>to the studio</em></h2>
+  <p class="deck reveal reveal-delay-1">credits, instruments, vibes</p>
+
+  <div class="credits-wrap">
+    <div class="credit-group">
+      <p class="credit-group-title">languages</p>
+      <div class="chip-row">
+        <span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">Java</span><span class="chip">C</span>
+      </div>
+    </div>
+    <div class="credit-group">
+      <p class="credit-group-title">web &amp; frameworks</p>
+      <div class="chip-row">
+        <span class="chip">React</span><span class="chip">HTML/CSS</span><span class="chip">Tailwind CSS</span><span class="chip">Flask</span><span class="chip">PWA Development</span>
+      </div>
+    </div>
+    <div class="credit-group">
+      <p class="credit-group-title">cloud &amp; tools</p>
+      <div class="chip-row">
+        <span class="chip">Firebase</span><span class="chip">Git &amp; GitHub</span><span class="chip">VS Code</span><span class="chip">Cloud-Based App Dev</span>
+      </div>
+    </div>
+    <div class="credit-group">
+      <p class="credit-group-title">machine learning</p>
+      <div class="chip-row">
+        <span class="chip">Random Forest</span><span class="chip">Gradient Boosting</span>
+      </div>
+    </div>
+    <div class="credit-group">
+      <p class="credit-group-title">the soft skills (no less real)</p>
+      <div class="chip-row">
+        <span class="chip">Leadership</span><span class="chip">Mentoring</span><span class="chip">Public Speaking</span>
+        <span class="chip">Event Planning</span><span class="chip">Team Collaboration</span><span class="chip">Technical Teaching</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS (happy girlie era) ================= -->
+<section id="projects" class="era-happy" data-track="04 · Discography" data-mood="happy">
+  <div class="track-meta">
+    <span class="track-num">Track 04</span>
+    <span class="eyebrow-line"></span>
+    <span class="track-dur">the discography</span>
+  </div>
+  <h2 class="section-title reveal">things i <em>actually built</em></h2>
+  <p class="deck reveal reveal-delay-1">no skips, i promise</p>
+
+  <div class="project-grid">
+    <div class="project-card reveal">
+      <span class="project-tag">ft. real-time data ☁️</span>
+      <h3>Weather Forecast Prediction System</h3>
+      <p>An ML-powered web app that predicts weather for specific cities using real-time API integration. Built with a team of three — I handled both model building and full-stack dev, like a true double threat.</p>
+      <div class="project-stack">
+        <span class="stack-pill">Python</span><span class="stack-pill">ML</span><span class="stack-pill">REST API</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-1">
+      <span class="project-tag">ft. main character energy ✨</span>
+      <h3>FOSS Club LBSITW — Official Website</h3>
+      <p>Designed and deployed the club's official site, led the technical team, and kept version control tight through every "we need this live by tonight" moment. Digital outreach: noticeably improved.</p>
+      <div class="project-stack">
+        <span class="stack-pill">Web Dev</span><span class="stack-pill">GitHub</span><span class="stack-pill">Leadership</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-2">
+      <span class="project-tag">ft. zero manual effort 📜</span>
+      <h3>Certifyr — Certificate Generation App</h3>
+      <p>A web app that automates certificate generation from CSV/Excel input, dynamically populating participant details into downloadable PDFs. Built so nobody has to make 200 certificates by hand again.</p>
+      <div class="project-stack">
+        <span class="stack-pill">Automation</span><span class="stack-pill">CSV/Excel</span><span class="stack-pill">PDF Gen</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal reveal-delay-3">
+      <span class="project-tag">ft. group-project healing 📚</span>
+      <h3>Collaborative Study Room Application</h3>
+      <p>A cloud-based platform for virtual co-studying — real-time study rooms, a Pomodoro timer, progress tracking, and tutor session management, all synced live so studying alone doesn't have to feel lonely.</p>
+      <div class="project-stack">
+        <span class="stack-pill">React</span><span class="stack-pill">Firebase</span><span class="stack-pill">Real-time Sync</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DUALITY: LEADERSHIP + ACHIEVEMENTS ================= -->
+<section id="duality" data-track="05 · The Both-Sides Bridge" data-mood="duality">
+  <div class="duality-wrap">
+    <div class="seam"></div>
+    <div class="duality-side side-light">
+      <h3>the girl who shows up</h3>
+      <ul class="achv-list">
+        <li>Secretary, FOSS Club (2025–26)</li>
+        <li>Technical Lead, FOSS Club (2024–25)</li>
+        <li>Content Lead, FOSS Club (2022–23)</li>
+        <li>Project Admin, Hack The Stack '26</li>
+        <li>Organized FOSS Club's first flagship event, IGNITA 1.0</li>
+        <li>Organized the Open Source Contribution Competition "Hack The Stack"</li>
+        <li>Hosted the weekly builder series "Craft the Draft"</li>
+        <li>Hosted a panel discussion with 4 industry freelancers on tech careers</li>
+        <li>Workshop Organizer — Git &amp; GitHub</li>
+        <li>Event Head, Prayaag '24 · Volunteer, Prayaag '23</li>
+      </ul>
+    </div>
+    <div class="duality-side side-dark">
+      <h3>the girl who wins</h3>
+      <ul class="achv-list">
+        <li>1st Prize — Ideathon, GDC '24</li>
+        <li>High Commendation — LBSITW Intra MUN 2025</li>
+        <li>2nd Prize — Debate, Sahithya '24</li>
+        <li>2nd Prize — Debate, Yavanika '25</li>
+        <li>2nd Prize — Short Film Contest, Spectacle '25</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CERTIFICATIONS ================= -->
+<section id="certs" data-track="06 · Bonus Track" data-mood="intro">
+  <div class="track-meta">
+    <span class="track-num">Track 06</span>
+    <span class="eyebrow-line"></span>
+    <span class="track-dur">bonus track</span>
+  </div>
+  <h2 class="section-title reveal">certifications <em>(deluxe edition)</em></h2>
+
+  <div class="cert-row">
+    <div class="cert-sleeve reveal">
+      <div class="mini-vinyl"></div>
+      <div>
+        <h4>Python Programming: From Basics to Advanced</h4>
+        <span>LBS Institute of Technology for Women · 2024</span>
+      </div>
+    </div>
+    <div class="cert-sleeve reveal reveal-delay-1">
+      <div class="mini-vinyl"></div>
+      <div>
+        <h4>Postman API Fundamentals — Student Expert</h4>
+        <span>Postman · 2025</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OUTRO / CONTACT ================= -->
+<section id="outro" data-track="07 · Outro (Reach Out)" data-mood="outro">
+  <div class="sparkle-field" aria-hidden="true">
+    <span class="sparkle" style="top:15%; left:12%; animation-delay:0s;">✦</span>
+    <span class="sparkle" style="top:25%; left:80%; animation-delay:0.8s;">✧</span>
+    <span class="sparkle" style="top:65%; left:8%; animation-delay:1.6s;">✦</span>
+    <span class="sparkle" style="top:75%; left:88%; animation-delay:2.2s;">✧</span>
+    <span class="sparkle" style="top:45%; left:50%; animation-delay:1.2s;">✦</span>
+    <span class="sparkle" style="top:10%; left:55%; animation-delay:2.8s;">✧</span>
+  </div>
+
+  <h2 class="section-title reveal">that's a wrap<br><em>(for now)</em></h2>
+  <p class="outro-line reveal reveal-delay-1">come find me before this becomes a bridge that goes "and I just want to know..."</p>
+
+  <div class="contact-row">
+    <a class="contact-pill reveal reveal-delay-2" href="mailto:uttarapraveen2005@gmail.com">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l9 7 9-7M3 6h18v12H3V6z"/></svg>
+      uttarapraveen2005@gmail.com
+    </a>
+    <a class="contact-pill reveal reveal-delay-3" href="https://linkedin.com/in/uttara-praveen" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.78-1.75-1.75s.78-1.75 1.75-1.75 1.75.78 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.07-.02-2.45-1.5-2.45-1.5 0-1.73 1.17-1.73 2.37v4.58h-3v-9h2.88v1.23h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v4.72z"/></svg>
+      LinkedIn
+    </a>
+    <a class="contact-pill reveal reveal-delay-4" href="https://github.com/UttaraPraveen" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.63 0-12 5.37-12 12 0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4 1.02 0 2.04.13 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.22.69.83.58 4.76-1.6 8.2-6.1 8.2-11.39 0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</section>
+
+<footer>made with overcaffeination, git commits at 2am, and a little bit of red (taylor's version) &nbsp;·&nbsp; © 2026 Uttara Praveen</footer>
+
+<script>
+  // ---------- scroll reveal ----------
+  const revealEls = document.querySelectorAll('.reveal, .stanza');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); }
+    });
+  }, { threshold: 0.18 });
+  revealEls.forEach(el=> io.observe(el));
+
+  // ---------- now playing + thread progress + mood bg ----------
+  const sections = document.querySelectorAll('section[data-track]');
+  const npTrack = document.getElementById('np-track');
+  const npBar = document.getElementById('now-playing');
+  const threadFill = document.getElementById('thread-fill');
+
+  const moodColor = {
+    intro: 'rgba(156,138,165,0.92)',
+    sad: 'rgba(27,30,44,0.92)',
+    happy: 'rgba(255,111,97,0.85)',
+    duality: 'rgba(30,34,51,0.92)',
+    outro: 'rgba(20,16,28,0.92)'
+  };
+
+  function updatePlayer(){
+    const scrollY = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    sections.forEach(sec=>{
+      if(sec.offsetTop <= scrollY){ current = sec; }
+    });
+    npTrack.textContent = current.dataset.track;
+    const mood = current.dataset.mood || 'intro';
+    npBar.style.background = moodColor[mood] || moodColor.intro;
+
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+    threadFill.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updatePlayer, { passive: true });
+  window.addEventListener('resize', updatePlayer);
+  updatePlayer();
+</script>
+
+</body>
+</html>
